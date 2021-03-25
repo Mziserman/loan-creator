@@ -65,6 +65,26 @@ module LoanCreator
       ATTRIBUTES.map { |k| instance_variable_get(:"@#{k}") }.join(',')
     end
 
+    def to_spec
+      %i[
+        index
+        due_on
+        crd_beginning_of_period
+        crd_end_of_period
+        period_theoric_interests
+        delta_interests
+        accrued_delta_interests
+        amount_to_add
+        period_interests
+        period_capital
+        total_paid_capital_end_of_period
+        total_paid_interests_end_of_period
+        period_amount_to_pay
+        due_interests_beginning_of_period
+        due_interests_end_of_period
+      ].map { |k| instance_variable_get(:"@#{k}").to_s }.join(',')
+    end
+
     def to_s
       to_csv
     end

@@ -41,9 +41,21 @@ RSpec.shared_examples 'valid lender timetable' do |loan_type, scenario, initial_
 
   let(:expected_lender_terms) do
     if initial_values.present?
-      CSV.parse(File.read("./spec/fixtures/#{scenario_name}_with_initial_values.csv"))
+      begin
+        CSV.parse(File.read("./spec/fixtures/#{scenario_name}_with_initial_values.csv"))
+      rescue => e
+        File.open("./spec/fixtures/#{scenario_name}_with_initial_values.csv", 'w') do |f|
+          f.write(lender_timetable.terms.map(&:to_spec).join("\n"))
+        end
+      end
     else
-      CSV.parse(File.read("./spec/fixtures/#{scenario_name}.csv"))
+      begin
+        CSV.parse(File.read("./spec/fixtures/#{scenario_name}.csv"))
+      rescue => e
+        File.open("./spec/fixtures/#{scenario_name}.csv", 'w') do |f|
+          f.write(lender_timetable.terms.map(&:to_spec).join("\n"))
+        end
+      end
     end
   end
 
@@ -122,6 +134,8 @@ RSpec.shared_examples 'valid lender timetable' do |loan_type, scenario, initial_
   end
 
   it 'has valid interests-related values' do
+    require 'pry'
+    binding.pry
     lender_timetable.terms.zip(expected_lender_terms).each do |term|
       term_got, term_expected = term
       INTERESTS_RELATED_COLUMNS.each { |i| term_expected[i] = bigd(term_expected[i]) }
